@@ -1,59 +1,180 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Simple Scheduler & Assignment Tool
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A small internal scheduling application built with **Laravel 12** and **Filament v4**.  
+This project focuses on managing schedules, locations, and personnel assignments with quota control and role-based access.
 
-## About Laravel
+The goal of this project is **not** to build a full-featured calendar system, but to demonstrate clean domain modeling, Laravel relationships, and practical usage of Filament for admin workflows.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🎯 Problem Statement
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+In many internal teams, schedules are still managed using spreadsheets or chat messages, which leads to:
+- Duplicate schedules
+- Over-assignment of personnel
+- Lack of visibility for upcoming tasks
 
-## Learning Laravel
+This app solves that problem by providing:
+- Centralized schedule management
+- Clear personnel quota per schedule
+- Admin-controlled assignments
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ✅ Core Features
 
-## Laravel Sponsors
+### Admin
+- Manage locations
+- Create and manage schedules
+- Define required personnel (quota) per schedule
+- Assign users to schedules
+- Automatically detect when a schedule is **full**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### User
+- View assigned schedules
+- See upcoming schedules only
+- No access to drafts or admin-only data
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🧱 Domain Model
 
-## Contributing
+### Entities
+- **User**
+- **Location**
+- **Schedule**
+- **ScheduleUser** (pivot table)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Relationships
+- One location → many schedules  
+- One schedule → many users  
+- One user → many schedules  
 
-## Code of Conduct
+### Key Business Rules
+- A schedule has a fixed quota (`required_personnel`)
+- When assigned users reach the quota, the schedule is considered **full**
+- Draft schedules are visible only to admins
+- Duplicate schedules for the same date, time, and location are prevented at the database level
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 🗄️ Database Structure
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### `locations`
+| Field | Type |
+|------|------|
+| id | bigint |
+| name | string |
+| address | string (nullable) |
+| code | string (nullable) |
 
-## License
+### `schedules`
+| Field | Type |
+|------|------|
+| id | bigint |
+| title | string |
+| date | date |
+| start_time | time |
+| end_time | time (nullable) |
+| location_id | foreign key |
+| status | enum (draft, published) |
+| required_personnel | integer |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Unique constraint:
+```
+(date, start_time, location_id)
+```
+
+### `schedule_user`
+| Field | Type |
+|------|------|
+| schedule_id | foreign key |
+| user_id | foreign key |
+| assigned_by | foreign key (nullable) |
+
+---
+
+## 🖥️ Admin Panel (Filament)
+
+The admin panel is built using **Filament v4** and includes:
+- CRUD for Locations
+- CRUD for Schedules
+- Relation Manager for assigning users to schedules
+- Table indicators for:
+  - Assigned personnel count
+  - Required quota
+  - Schedule status (draft / published)
+
+Quota enforcement is handled directly in the assignment logic.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend:** Laravel 12
+- **Admin UI:** Filament v4
+- **Database:** MySQL
+- **Authentication:** Laravel default auth
+- **Authorization:** Policies + role flag (`is_admin`)
+
+---
+
+## 🚀 Installation
+
+```bash
+git clone https://github.com/matiuskm/simple-scheduler.git
+cd simple-scheduler
+
+composer install
+cp .env.example .env
+php artisan key:generate
+
+php artisan migrate --seed
+php artisan serve
+```
+
+Create an admin user by setting `is_admin = true` in the `users` table.
+
+Access admin panel at:
+```
+/admin
+```
+
+---
+
+## 📌 Design Decisions
+
+- **Filament-first approach:**  
+  This project prioritizes internal admin workflows over public-facing UI.
+
+- **No external calendar libraries:**  
+  Schedule logic is intentionally simple and explicit.
+
+- **Strict scope control:**  
+  Features such as recurring schedules, notifications, and calendar views are intentionally excluded.
+
+---
+
+## 🔮 Possible Improvements
+
+- User self-assignment to available schedules
+- Notifications (email / in-app)
+- Recurring schedules
+- Calendar-style UI
+- Public-facing frontend
+
+---
+
+## 📎 Purpose
+
+This project is part of a personal portfolio and is designed to demonstrate:
+- Clean Laravel model relationships
+- Practical Filament usage
+- Real-world admin use cases
+- Strong scope control and project completion
+
+---
+
+## 📄 License
+
+MIT
