@@ -76,9 +76,7 @@ class Schedule extends Model {
     }
 
     public function scopeUpcoming($query) {
-        return $query->whereDate('scheduled_date', '>', today()->toDateString())
-            ->orderBy('scheduled_date')
-            ->orderBy('start_time');
+        return $query->upcomingVisible();
     }
 
     public function scopeUpcomingVisible($query)
@@ -148,6 +146,13 @@ class Schedule extends Model {
 
     public function getLifecycleStatusAttribute(): string
     {
+        if ($this->isPast && ! in_array($this->status, [self::STATUS_CANCELLED, self::STATUS_COMPLETED], true)) {
+            $this->status = self::STATUS_COMPLETED;
+            $this->saveQuietly();
+
+            return self::STATUS_COMPLETED;
+        }
+
         if ($this->status === self::STATUS_DRAFT) {
             return self::STATUS_DRAFT;
         }
@@ -194,6 +199,13 @@ class Schedule extends Model {
         if ($this->is_locked && ! $asAdmin) {
             throw new DomainException('Schedule is locked before start.');
         }
+    }
+
+    public function getIsPastAttribute(): bool
+    {
+        $end = $this->ends_at ?? $this->starts_at;
+
+        return now()->gt($end);
     }
 
     public function scopeNeedingPersonnel($query)

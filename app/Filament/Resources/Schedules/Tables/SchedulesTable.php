@@ -11,6 +11,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\ScheduleConflictDetector;
+use Illuminate\Support\Str;
 
 class SchedulesTable
 {
@@ -67,12 +68,32 @@ class SchedulesTable
                     ->colors([
                         'success' => fn (Schedule $record) => ! app(ScheduleConflictDetector::class)->summary($record)['has_conflicts'],
                         'warning' => fn () => true,
-                    ]),
+                    ])
+                    ->tooltip(function (Schedule $record) {
+                        $detector = app(ScheduleConflictDetector::class);
+                        $locations = $detector->locationConflicts($record)
+                            ->map(fn (Schedule $c) => "{$c->title} ({$c->start_time}-{$c->end_time})")
+                            ->values();
+
+                        $personnel = $detector->personnelConflicts($record)
+                            ->map(function ($group, $userId) {
+                                return "User {$userId} overlaps " . $group->count() . " schedule(s)";
+                            })
+                            ->values();
+
+                        $lines = collect([
+                            $locations->isNotEmpty() ? 'Location conflicts: ' . $locations->implode('; ') : null,
+                            $personnel->isNotEmpty() ? 'Personnel conflicts: ' . $personnel->implode('; ') : null,
+                        ])->filter()->all();
+
+                        return empty($lines) ? 'No conflicts' : implode(' | ', $lines);
+                    }),
             ])
             ->filters([
                 Filter::make('upcoming')
                     ->label('Upcoming only')
                     ->toggle()
+                    ->default(true)
                     ->query(fn (Builder $query): Builder => $query->upcoming()),
                 Filter::make('needs_personnel')
                     ->label('Needs personnel')

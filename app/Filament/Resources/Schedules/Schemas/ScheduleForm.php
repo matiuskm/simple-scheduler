@@ -22,13 +22,14 @@ class ScheduleForm
             ->components([
                 TextInput::make('title')
                     ->required()
+                    ->columnSpanFull()
                     ->maxLength(255),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 DatePicker::make('scheduled_date')
                     ->required(),
                 TimePicker::make('start_time')
-                    ->displayFormat('H:i')
+                    ->seconds(false)
                     ->required()
                     ->rules(function (Get $get) {
                         $date = $get('scheduled_date');
@@ -51,7 +52,6 @@ class ScheduleForm
                     ]),
                 Select::make('location_id')
                     ->relationship('location', 'name')
-                    ->searchable()
                     ->required(),
                 Select::make('status')
                     ->options([
