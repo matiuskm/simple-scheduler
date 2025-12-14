@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Schedules\Schemas;
 
 use Closure;
+use App\Models\Schedule;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -11,6 +12,7 @@ use Filament\Forms\Components\TimePicker;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Validation\Rule;
 
 class ScheduleForm
 {
@@ -27,7 +29,26 @@ class ScheduleForm
                     ->required(),
                 TimePicker::make('start_time')
                     ->displayFormat('H:i')
-                    ->required(),
+                    ->required()
+                    ->rules(function (Get $get) {
+                        $date = $get('scheduled_date');
+                        $locationId = $get('location_id');
+
+                        if (! $date || ! $locationId) {
+                            return [];
+                        }
+
+                        return [
+                            Rule::unique('schedules', 'start_time')
+                                ->where(fn ($query) => $query
+                                    ->where('scheduled_date', $date)
+                                    ->where('location_id', $locationId))
+                                ->ignore(request()->route('record')),
+                        ];
+                    })
+                    ->validationMessages([
+                        'unique' => 'A schedule already exists at this time for the selected location.',
+                    ]),
                 Select::make('location_id')
                     ->relationship('location', 'name')
                     ->searchable()
