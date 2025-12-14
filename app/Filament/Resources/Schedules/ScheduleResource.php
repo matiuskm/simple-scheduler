@@ -39,7 +39,7 @@ class ScheduleResource extends Resource
     public static function getRelations(): array
     {
         return [
-            UsersRelationManager::class,
+            // UsersRelationManager::class,
         ];
     }
 

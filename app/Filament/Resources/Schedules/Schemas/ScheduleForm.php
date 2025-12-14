@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\Schedules\Schemas;
 
+use Closure;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TimePicker;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class ScheduleForm
@@ -23,10 +26,8 @@ class ScheduleForm
                 DatePicker::make('scheduled_date')
                     ->required(),
                 TimePicker::make('start_time')
-                    ->format('H:i')
+                    ->displayFormat('H:i')
                     ->required(),
-                TimePicker::make('end_time')
-                    ->format('H:i'),
                 Select::make('location_id')
                     ->relationship('location', 'name')
                     ->searchable()
@@ -35,28 +36,45 @@ class ScheduleForm
                     ->options([
                         'draft' => 'Draft',
                         'published' => 'Published',
+                        'locked' => 'Locked',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
                     ])
                     ->required()
                     ->default('draft'),
                 TextInput::make('required_personnel')
                     ->numeric()
                     ->minValue(1)
-                    ->default(1),
+                    ->default(1)
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, Get $get, $state): void {
+                        $limit = (int) $state;
+                        $selected = (array) $get('user_id');
+
+                        if ($limit > 0 && count($selected) > $limit) {
+                            $set('user_id', array_slice($selected, 0, $limit));
+                        }
+                    }),
                 Select::make('user_id')
                     ->multiple()
                     ->relationship('users', 'name')
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->live()
+                    ->rule(function (Get $get) {
+                        return function (string $attribute, $value, Closure $fail) use ($get) {
+                            $requiredPersonnel = (int) $get('required_personnel');
+
+                            if (! is_array($value)) {
+                                return;
+                            }
+
+                            if ($requiredPersonnel > 0 && count($value) > $requiredPersonnel) {
+                                $fail("You can assign at most {$requiredPersonnel} personnel to this schedule.");
+                            }
+                        };
+                    }),
             ])->columns(2);
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array {
-        if ($this->ownerRecord->is_full) {
-            abort(422, 'Schedule is already full.');
-        }
-
-        $data['assigned_by'] = auth()->id();
-
-        return $data;
-    }
 }
