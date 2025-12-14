@@ -12,6 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\ScheduleAuditLog;
 use App\Services\ScheduleConflictDetector;
+use App\Models\AssignmentRequest;
 
 class Schedule extends Model {
     use HasFactory;
@@ -69,8 +70,21 @@ class Schedule extends Model {
         return $this->hasMany(ScheduleAuditLog::class);
     }
 
+    public function assignmentRequests(): HasMany
+    {
+        return $this->hasMany(AssignmentRequest::class);
+    }
+
     public function scopeUpcoming($query) {
         return $query->whereDate('scheduled_date', '>', today()->toDateString())
+            ->orderBy('scheduled_date')
+            ->orderBy('start_time');
+    }
+
+    public function scopeUpcomingVisible($query)
+    {
+        return $query->whereDate('scheduled_date', '>=', today()->toDateString())
+            ->whereNotIn('status', [self::STATUS_CANCELLED, self::STATUS_COMPLETED])
             ->orderBy('scheduled_date')
             ->orderBy('start_time');
     }
@@ -175,11 +189,20 @@ class Schedule extends Model {
         }
     }
 
+    public function assertCanRelease(bool $asAdmin = false): void
+    {
+        if ($this->is_locked && ! $asAdmin) {
+            throw new DomainException('Schedule is locked before start.');
+        }
+    }
+
     public function scopeNeedingPersonnel($query)
     {
-        return $query->whereRaw(
-            '(select count(*) from schedule_user where schedule_user.schedule_id = schedules.id) < required_personnel'
-        );
+        return $query
+            ->whereNotIn('status', [self::STATUS_CANCELLED, self::STATUS_COMPLETED])
+            ->whereRaw(
+                '(select count(*) from schedule_user where schedule_user.schedule_id = schedules.id) < required_personnel'
+            );
     }
 
     public function scopeHasConflicts($query)
@@ -244,4 +267,5 @@ class Schedule extends Model {
     {
         return app(ScheduleConflictDetector::class)->summary($this);
     }
+
 }
