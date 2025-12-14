@@ -68,10 +68,27 @@ class UsersRelationManager extends RelationManager
                         $schedule->users()->attach($recordIds, [
                             'assigned_by' => auth()->id(),
                         ]);
+
+                        foreach ($recordIds as $userId) {
+                            $schedule->logAssignmentAdded((int) $userId);
+                        }
                     }),
             ])
             ->recordActions([
-                DetachAction::make(),
+                DetachAction::make()
+                    ->using(function (RelationManager $livewire, $record): void {
+                        $schedule = $livewire->getOwnerRecord();
+                        $isAdmin = auth()->user()?->isAdmin();
+
+                        if ($schedule->is_locked && ! $isAdmin) {
+                            throw ValidationException::withMessages([
+                                'recordIds' => 'Schedule is locked before start; only admins may modify assignments.',
+                            ]);
+                        }
+
+                        $schedule->users()->detach($record->getKey());
+                        $schedule->logAssignmentRemoved((int) $record->getKey());
+                    }),
             ]);
     }
 }

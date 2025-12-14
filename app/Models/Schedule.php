@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use App\Models\ScheduleAuditLog;
+use App\Services\ScheduleConflictDetector;
 
 class Schedule extends Model {
     use HasFactory;
@@ -37,6 +41,15 @@ class Schedule extends Model {
         'end_time' => 'datetime:H:i',
     ];
 
+    protected static function booted(): void
+    {
+        static::updated(function (Schedule $schedule): void {
+            if ($schedule->wasChanged('status')) {
+                $schedule->logStatusChange($schedule->getOriginal('status'), $schedule->status);
+            }
+        });
+    }
+
     public function isPublished(): bool {
         return $this->status === self::STATUS_PUBLISHED;
     }
@@ -49,6 +62,11 @@ class Schedule extends Model {
         return $this->belongsToMany(User::class)
             ->withTimestamps()
             ->withPivot('assigned_by');
+    }
+
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(ScheduleAuditLog::class);
     }
 
     public function scopeUpcoming($query) {
@@ -162,5 +180,68 @@ class Schedule extends Model {
         return $query->whereRaw(
             '(select count(*) from schedule_user where schedule_user.schedule_id = schedules.id) < required_personnel'
         );
+    }
+
+    public function scopeHasConflicts($query)
+    {
+        return $query->where(function ($query) {
+            $query->whereExists(function ($subquery) {
+                $subquery->select(DB::raw(1))
+                    ->from('schedules as other')
+                    ->whereColumn('other.location_id', 'schedules.location_id')
+                    ->whereColumn('other.scheduled_date', 'schedules.scheduled_date')
+                    ->whereColumn('other.id', '!=', 'schedules.id')
+                    ->whereNotIn('other.status', [self::STATUS_CANCELLED, self::STATUS_COMPLETED])
+                    ->whereRaw('other.start_time < COALESCE(schedules.end_time, schedules.start_time)')
+                    ->whereRaw('COALESCE(other.end_time, other.start_time) > schedules.start_time');
+            })->orWhereExists(function ($subquery) {
+                $subquery->select(DB::raw(1))
+                    ->from('schedule_user as su')
+                    ->join('schedule_user as other_su', 'su.user_id', '=', 'other_su.user_id')
+                    ->join('schedules as other', 'other.id', '=', 'other_su.schedule_id')
+                    ->whereColumn('su.schedule_id', 'schedules.id')
+                    ->whereColumn('other.scheduled_date', 'schedules.scheduled_date')
+                    ->whereColumn('other.id', '!=', 'schedules.id')
+                    ->whereNotIn('other.status', [self::STATUS_CANCELLED, self::STATUS_COMPLETED])
+                    ->whereRaw('other.start_time < COALESCE(schedules.end_time, schedules.start_time)')
+                    ->whereRaw('COALESCE(other.end_time, other.start_time) > schedules.start_time');
+            });
+        });
+    }
+
+    public function logAudit(string $action, array $metadata = []): void
+    {
+        $this->auditLogs()->create([
+            'actor_id' => auth()->id(),
+            'action' => $action,
+            'metadata' => $metadata,
+        ]);
+    }
+
+    public function logStatusChange(string $from, string $to): void
+    {
+        $this->logAudit('status_changed', [
+            'from' => $from,
+            'to' => $to,
+        ]);
+    }
+
+    public function logAssignmentAdded(int $userId): void
+    {
+        $this->logAudit('assignment_added', [
+            'user_id' => $userId,
+        ]);
+    }
+
+    public function logAssignmentRemoved(int $userId): void
+    {
+        $this->logAudit('assignment_removed', [
+            'user_id' => $userId,
+        ]);
+    }
+
+    public function conflictSummary(): array
+    {
+        return app(ScheduleConflictDetector::class)->summary($this);
     }
 }

@@ -6,6 +6,7 @@ use App\Filament\Resources\Schedules\Pages\CreateSchedule;
 use App\Filament\Resources\Schedules\Pages\EditSchedule;
 use App\Filament\Resources\Schedules\Pages\ListSchedules;
 use App\Filament\Resources\Schedules\RelationManagers\UsersRelationManager;
+use App\Filament\Resources\Schedules\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Schedules\Schemas\ScheduleForm;
 use App\Filament\Resources\Schedules\Tables\SchedulesTable;
 use App\Models\Schedule;
@@ -39,7 +40,8 @@ class ScheduleResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // UsersRelationManager::class,
+            UsersRelationManager::class,
+            AuditLogsRelationManager::class,
         ];
     }
 

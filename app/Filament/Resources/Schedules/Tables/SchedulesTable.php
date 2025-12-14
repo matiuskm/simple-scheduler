@@ -10,6 +10,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\ScheduleConflictDetector;
 
 class SchedulesTable
 {
@@ -41,6 +42,32 @@ class SchedulesTable
                     ->getStateUsing(fn (Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
                     ->badge()
                     ->color(fn (Schedule $record) => $record->isFull ? 'warning' : 'success'),
+                TextColumn::make('conflicts')
+                    ->label('Conflicts')
+                    ->getStateUsing(function (Schedule $record) {
+                        $summary = app(ScheduleConflictDetector::class)->summary($record);
+
+                        if (! $summary['has_conflicts']) {
+                            return 'None';
+                        }
+
+                        $parts = [];
+
+                        if ($summary['location_count'] > 0) {
+                            $parts[] = "Location ({$summary['location_count']})";
+                        }
+
+                        if ($summary['personnel_count'] > 0) {
+                            $parts[] = "Personnel ({$summary['personnel_count']})";
+                        }
+
+                        return implode(', ', $parts);
+                    })
+                    ->badge()
+                    ->colors([
+                        'success' => fn (Schedule $record) => ! app(ScheduleConflictDetector::class)->summary($record)['has_conflicts'],
+                        'warning' => fn () => true,
+                    ]),
             ])
             ->filters([
                 Filter::make('upcoming')
@@ -51,6 +78,10 @@ class SchedulesTable
                     ->label('Needs personnel')
                     ->toggle()
                     ->query(fn (Builder $query): Builder => $query->needingPersonnel()),
+                Filter::make('has_conflicts')
+                    ->label('Has conflicts')
+                    ->toggle()
+                    ->query(fn (Builder $query): Builder => $query->hasConflicts()),
             ])
             ->recordActions([
                 EditAction::make()
