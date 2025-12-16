@@ -4,7 +4,11 @@ namespace App\Filament\Widgets;
 
 use App\Models\Schedule;
 use Filament\Actions\Action;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Panel;
+use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,7 +26,7 @@ class OpenUpcomingSchedules extends BaseWidget
         $user = auth()->user();
 
         return Schedule::query()
-            ->with('location')
+            ->with(['location', 'users'])
             ->upcomingVisible()
             ->needingPersonnel()
             ->when($user, fn (Builder $query) => $query->whereDoesntHave('users', fn ($q) => $q->where('users.id', $user->id)));
@@ -32,23 +36,53 @@ class OpenUpcomingSchedules extends BaseWidget
     {
         return $table
             ->columns([
-                TextColumn::make('title')->label('Schedule')->wrap(),
-                TextColumn::make('location.name')->label('Location'),
-                TextColumn::make('scheduled_date')->date(),
-                TextColumn::make('start_time')->time(),
-                TextColumn::make('lifecycle_status')->label('Status')->colors([
-                    'success' => Schedule::STATUS_OPEN,
-                    'warning' => Schedule::STATUS_FULL,
+                TextColumn::make('title')
+                    ->label('Schedule')
+                    ->wrap()
+                    ->weight(FontWeight::ExtraBold)
+                    ->size(TextSize::Large)
+                    ->formatStateUsing(fn ($state) => "🗓️ {$state}"),
+                TextColumn::make('location.name')
+                    ->label('Location')
+                    ->icon('heroicon-o-map-pin')
+                    ->weight('medium'),
+                Split::make([
+                    TextColumn::make('scheduled_date')
+                        ->date('D, j M Y')
+                        ->label('Date')
+                        ->icon('heroicon-o-calendar-days'),
+                    TextColumn::make('start_time')
+                        ->time()
+                        ->formatStateUsing(fn ($state) => date('H:i', strtotime($state)))
+                        ->label('Start')
+                        ->icon('heroicon-o-clock'),
                 ]),
-                TextColumn::make('capacity')
-                    ->label('Capacity')
-                    ->getStateUsing(fn (Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
-                    ->badge()
-                    ->color(fn (Schedule $record) => $record->isFull ? 'warning' : 'success'),
+                Split::make([
+                    TextColumn::make('lifecycle_status')
+                        ->label('Status')
+                        ->badge()
+                        ->colors([
+                        'success' => Schedule::STATUS_OPEN,
+                        'warning' => Schedule::STATUS_FULL,
+                    ]),
+                    TextColumn::make('capacity')
+                        ->label('Capacity')
+                        ->getStateUsing(fn (Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
+                        ->badge()
+                        ->color(fn (Schedule $record) => $record->isFull ? 'warning' : 'success'),
+                ]),
+                Panel::make([
+                    TextColumn::make('personnel')
+                        ->label('Personnel')
+                        ->getStateUsing(fn (Schedule $record) => $record->users->pluck('name')->filter()->values()->all())
+                        ->listWithLineBreaks()
+                        ->bulleted()
+                        ->placeholder('None assigned'),
+                ])->collapsible()->collapsed(),
             ])
             ->recordActions([
                 Action::make('request')
-                    ->label('Request assignment')
+                    ->label('Ambil')
                     ->icon('heroicon-o-plus')
                     ->requiresConfirmation()
                     ->action(function (Schedule $record) {
@@ -69,6 +103,10 @@ class OpenUpcomingSchedules extends BaseWidget
                     }),
             ])
             ->paginated([5, 10, 25])
-            ->defaultPaginationPageOption(5);
+            ->defaultPaginationPageOption(5)
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
+            ]);
     }
 }

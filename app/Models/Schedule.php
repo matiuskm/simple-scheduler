@@ -146,13 +146,6 @@ class Schedule extends Model {
 
     public function getLifecycleStatusAttribute(): string
     {
-        if ($this->isPast && ! in_array($this->status, [self::STATUS_CANCELLED, self::STATUS_COMPLETED], true)) {
-            $this->status = self::STATUS_COMPLETED;
-            $this->saveQuietly();
-
-            return self::STATUS_COMPLETED;
-        }
-
         if ($this->status === self::STATUS_DRAFT) {
             return self::STATUS_DRAFT;
         }
@@ -163,6 +156,13 @@ class Schedule extends Model {
 
         if ($this->is_locked) {
             return self::STATUS_LOCKED;
+        }
+
+        if ($this->has_ended && ! in_array($this->status, [self::STATUS_CANCELLED, self::STATUS_COMPLETED], true)) {
+            $this->status = self::STATUS_COMPLETED;
+            $this->saveQuietly();
+
+            return self::STATUS_COMPLETED;
         }
 
         if ($this->assigned_count >= $this->required_personnel) {
@@ -201,7 +201,7 @@ class Schedule extends Model {
         }
     }
 
-    public function getIsPastAttribute(): bool
+    public function getHasEndedAttribute(): bool
     {
         $end = $this->ends_at ?? $this->starts_at;
 
