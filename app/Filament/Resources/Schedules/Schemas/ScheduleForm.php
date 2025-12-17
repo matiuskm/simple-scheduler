@@ -76,6 +76,17 @@ class ScheduleForm
                             $set('user_id', array_slice($selected, 0, $limit));
                         }
                     }),
+                Select::make('liturgical_color')
+                    ->label('Liturgical Color')
+                    ->options([
+                        'hijau' => 'Hijau',
+                        'merah' => 'Merah',
+                        'putih' => 'Putih',
+                        'merah muda' => 'Merah muda',
+                        'ungu' => 'Ungu',
+                    ])
+                    ->searchable()
+                    ->nullable(),
                 Select::make('user_id')
                     ->multiple()
                     ->relationship('users', 'name')

@@ -43,6 +43,17 @@ class SchedulesTable
                     ->getStateUsing(fn (Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
                     ->badge()
                     ->color(fn (Schedule $record) => $record->isFull ? 'warning' : 'success'),
+                TextColumn::make('liturgical_color')
+                    ->label('Liturgical')
+                    ->badge()
+                    ->colors([
+                        'success' => 'hijau',
+                        'danger' => 'merah',
+                        'gray' => 'putih',
+                        'pink' => 'merah muda',
+                        'purple' => 'ungu',
+                    ])
+                    ->placeholder('—'),
                 TextColumn::make('conflicts')
                     ->label('Conflicts')
                     ->getStateUsing(function (Schedule $record) {

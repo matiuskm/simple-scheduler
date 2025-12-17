@@ -27,6 +27,7 @@ class ScheduleFactory extends Factory
             'location_id' => Location::factory(),
             'status' => Schedule::STATUS_PUBLISHED,
             'required_personnel' => 2,
+            'liturgical_color' => fake()->randomElement(['hijau', 'merah', 'putih', 'merah muda', 'ungu']),
         ];
     }
 

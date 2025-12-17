@@ -35,6 +35,7 @@ class MyUpcomingSchedules extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
+            ->recordClasses(fn (Schedule $record) => $this->liturgicalColorClasses($record->liturgical_color))
             ->columns([
                 TextColumn::make('title')
                     ->label('Schedule')
@@ -105,5 +106,17 @@ class MyUpcomingSchedules extends BaseWidget
                 'md' => 2,
                 'xl' => 3,
             ]);
+    }
+
+    private function liturgicalColorClasses(?string $liturgicalColor): string
+    {
+        return match ($liturgicalColor) {
+            'hijau' => 'bg-green-50 dark:bg-green-950/25',
+            'merah' => 'bg-red-50 dark:bg-red-950/25',
+            'putih' => 'bg-white dark:bg-gray-900',
+            'merah muda' => 'bg-pink-50 dark:bg-pink-950/25',
+            'ungu' => 'bg-purple-50 dark:bg-purple-950/25',
+            default => '',
+        };
     }
 }

@@ -34,7 +34,8 @@ class Schedule extends Model {
         'end_time',
         'location_id',
         'status',
-        'required_personnel'
+        'required_personnel',
+        'liturgical_color',
     ];
 
     protected $casts = [
