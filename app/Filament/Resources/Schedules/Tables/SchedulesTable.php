@@ -11,6 +11,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\ScheduleConflictDetector;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Str;
 
 class SchedulesTable
@@ -30,7 +31,7 @@ class SchedulesTable
                     ->label('Location'),
                 TextColumn::make('status')
                     ->label('Lifecycle')
-                    ->state(fn (Schedule $record) => $record->lifecycle_status)
+                    ->state(fn(Schedule $record) => $record->lifecycle_status)
                     ->badge()
                     ->colors([
                         'gray' => Schedule::STATUS_DRAFT,
@@ -40,20 +41,16 @@ class SchedulesTable
                         'danger' => [Schedule::STATUS_LOCKED, Schedule::STATUS_CANCELLED],
                     ]),
                 TextColumn::make('capacity')
-                    ->getStateUsing(fn (Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
+                    ->getStateUsing(fn(Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
                     ->badge()
-                    ->color(fn (Schedule $record) => $record->isFull ? 'warning' : 'success'),
+                    ->color(fn(Schedule $record) => $record->isFull ? 'warning' : 'success'),
                 TextColumn::make('liturgical_color')
                     ->label('Liturgical')
                     ->badge()
-                    ->colors([
-                        'success' => 'hijau',
-                        'danger' => 'merah',
-                        'gray' => 'putih',
-                        'pink' => 'merah muda',
-                        'purple' => 'ungu',
-                    ])
-                    ->placeholder('—'),
+                    ->formatStateUsing(fn($state) => ucfirst($state ?? '-'))
+                    ->extraAttributes(fn(Schedule $record) => [
+                        'class' => self::liturgicalBadgeClasses($record->liturgical_color),
+                    ]),
                 TextColumn::make('conflicts')
                     ->label('Conflicts')
                     ->getStateUsing(function (Schedule $record) {
@@ -77,13 +74,13 @@ class SchedulesTable
                     })
                     ->badge()
                     ->colors([
-                        'success' => fn (Schedule $record) => ! app(ScheduleConflictDetector::class)->summary($record)['has_conflicts'],
-                        'warning' => fn () => true,
+                        'success' => fn(Schedule $record) => ! app(ScheduleConflictDetector::class)->summary($record)['has_conflicts'],
+                        'warning' => fn() => true,
                     ])
                     ->tooltip(function (Schedule $record) {
                         $detector = app(ScheduleConflictDetector::class);
                         $locations = $detector->locationConflicts($record)
-                            ->map(fn (Schedule $c) => "{$c->title} ({$c->start_time}-{$c->end_time})")
+                            ->map(fn(Schedule $c) => "{$c->title} ({$c->start_time}-{$c->end_time})")
                             ->values();
 
                         $personnel = $detector->personnelConflicts($record)
@@ -105,24 +102,41 @@ class SchedulesTable
                     ->label('Upcoming only')
                     ->toggle()
                     ->default(true)
-                    ->query(fn (Builder $query): Builder => $query->upcoming()),
+                    ->query(fn(Builder $query): Builder => $query->upcoming()),
                 Filter::make('needs_personnel')
                     ->label('Needs personnel')
                     ->toggle()
-                    ->query(fn (Builder $query): Builder => $query->needingPersonnel()),
+                    ->query(fn(Builder $query): Builder => $query->needingPersonnel()),
                 Filter::make('has_conflicts')
                     ->label('Has conflicts')
                     ->toggle()
-                    ->query(fn (Builder $query): Builder => $query->hasConflicts()),
+                    ->query(fn(Builder $query): Builder => $query->hasConflicts()),
             ])
             ->recordActions([
                 EditAction::make()
-                    ->disabled(fn (Schedule $record) => ! $record->canAssign(auth()->user()?->isAdmin())),
+                    ->disabled(fn(Schedule $record) => ! $record->canAssign(auth()->user()?->isAdmin())),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private static function liturgicalBadgeClasses(?string $liturgicalColor): string
+    {
+        return match ($liturgicalColor) {
+            'hijau' =>
+            '[&_.fi-badge]:!bg-green-100 [&_.fi-badge]:!text-green-800 dark:[&_.fi-badge]:!bg-green-950/40 dark:[&_.fi-badge]:!text-green-200',
+            'merah' =>
+            '[&_.fi-badge]:!bg-red-100 [&_.fi-badge]:!text-red-800 dark:[&_.fi-badge]:!bg-red-950/40 dark:[&_.fi-badge]:!text-red-200',
+            'putih' =>
+            '[&_.fi-badge]:!bg-gray-100 [&_.fi-badge]:!text-gray-800 dark:[&_.fi-badge]:!bg-gray-900 dark:[&_.fi-badge]:!text-gray-200',
+            'merah muda' =>
+            '[&_.fi-badge]:!bg-pink-100 [&_.fi-badge]:!text-pink-800 dark:[&_.fi-badge]:!bg-pink-950/40 dark:[&_.fi-badge]:!text-pink-200',
+            'ungu' =>
+            '[&_.fi-badge]:!bg-purple-100 [&_.fi-badge]:!text-purple-800 dark:[&_.fi-badge]:!bg-purple-950/40 dark:[&_.fi-badge]:!text-purple-200',
+            default => '',
+        };
     }
 }

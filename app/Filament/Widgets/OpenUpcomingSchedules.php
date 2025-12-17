@@ -48,6 +48,9 @@ class OpenUpcomingSchedules extends BaseWidget
                     ->label('Location')
                     ->icon('heroicon-o-map-pin')
                     ->weight('medium'),
+                TextColumn::make('liturgical_color')
+                    ->size(TextSize::ExtraSmall)
+                    ->formatStateUsing(fn ($state) => $state ? 'Warna Liturgi: '.ucfirst($state) : '-'),
                 Split::make([
                     TextColumn::make('scheduled_date')
                         ->date('D, j M Y')
@@ -108,11 +111,11 @@ class OpenUpcomingSchedules extends BaseWidget
     private function liturgicalColorClasses(?string $liturgicalColor): string
     {
         return match ($liturgicalColor) {
-            'hijau' => 'bg-green-50 dark:bg-green-950/25',
-            'merah' => 'bg-red-50 dark:bg-red-950/25',
-            'putih' => 'bg-white dark:bg-gray-900',
-            'merah muda' => 'bg-pink-50 dark:bg-pink-950/25',
-            'ungu' => 'bg-purple-50 dark:bg-purple-950/25',
+            'hijau' => 'bg-green-50',
+            'merah' => 'bg-red-50',
+            'putih' => 'bg-white',
+            'merah muda' => 'bg-pink-50',
+            'ungu' => 'bg-purple-100',
             default => '',
         };
     }
