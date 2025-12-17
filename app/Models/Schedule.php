@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\ScheduleAuditLog;
 use App\Services\ScheduleConflictDetector;
 use App\Models\AssignmentRequest;
+use App\Services\ScheduleAssignmentService;
 
 class Schedule extends Model {
     use HasFactory;
@@ -46,6 +47,10 @@ class Schedule extends Model {
     {
         static::updated(function (Schedule $schedule): void {
             if ($schedule->wasChanged('status')) {
+                if ($schedule->status === self::STATUS_CANCELLED) {
+                    app(ScheduleAssignmentService::class)->notifyScheduleCancelled($schedule, auth()->user());
+                }
+
                 $schedule->logStatusChange($schedule->getOriginal('status'), $schedule->status);
             }
         });

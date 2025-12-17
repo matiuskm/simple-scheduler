@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
+use App\Services\ScheduleAssignmentService;
 
 class MyUpcomingSchedules extends BaseWidget
 {
@@ -95,10 +96,7 @@ class MyUpcomingSchedules extends BaseWidget
                             throw ValidationException::withMessages(['user' => 'You must be logged in.']);
                         }
 
-                        $record->assertCanRelease($user->isAdmin());
-
-                        $record->users()->detach($user->id);
-                        $record->logAssignmentRemoved($user->id);
+                        app(ScheduleAssignmentService::class)->release($record, $user, $user, false);
                     }),
             ])
             ->paginated([5, 10, 25])

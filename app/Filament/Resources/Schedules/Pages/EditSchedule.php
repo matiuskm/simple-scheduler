@@ -3,6 +3,9 @@
 namespace App\Filament\Resources\Schedules\Pages;
 
 use App\Filament\Resources\Schedules\ScheduleResource;
+use App\Models\User;
+use App\Notifications\ScheduleAssignmentConfirmed;
+use App\Notifications\ScheduleForcedRelease;
 use Illuminate\Validation\ValidationException;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -11,11 +14,57 @@ class EditSchedule extends EditRecord
 {
     protected static string $resource = ScheduleResource::class;
 
+    /**
+     * @var array<int>
+     */
+    protected array $previousUserIds = [];
+
     protected function getHeaderActions(): array
     {
         return [
             DeleteAction::make(),
         ];
+    }
+
+    protected function beforeSave(): void
+    {
+        $this->previousUserIds = $this->record
+            ->users()
+            ->pluck('users.id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+    }
+
+    protected function afterSave(): void
+    {
+        $this->record->load('users');
+
+        $currentUserIds = $this->record
+            ->users
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        $added = array_values(array_diff($currentUserIds, $this->previousUserIds));
+        $removed = array_values(array_diff($this->previousUserIds, $currentUserIds));
+
+        foreach ($added as $userId) {
+            $this->record->logAssignmentAdded($userId);
+
+            if ((bool) config('scheduler.email_notifications', true)) {
+                User::find($userId)?->notify(new ScheduleAssignmentConfirmed($this->record));
+            }
+        }
+
+        $actor = auth()->user();
+
+        foreach ($removed as $userId) {
+            $this->record->logAssignmentRemoved($userId);
+
+            if ((bool) config('scheduler.email_notifications', true)) {
+                User::find($userId)?->notify(new ScheduleForcedRelease($this->record, $actor));
+            }
+        }
     }
 
     protected function mutateFormDataBeforeSave(array $data): array

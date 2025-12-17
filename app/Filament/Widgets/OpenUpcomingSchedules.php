@@ -14,6 +14,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Validation\ValidationException;
+use App\Services\ScheduleAssignmentService;
 
 class OpenUpcomingSchedules extends BaseWidget
 {
@@ -92,14 +93,7 @@ class OpenUpcomingSchedules extends BaseWidget
                             throw ValidationException::withMessages(['user' => 'You must be logged in.']);
                         }
 
-                        $record->assertCanAssign($user->isAdmin());
-
-                        if ($record->users()->where('users.id', $user->id)->exists()) {
-                            throw ValidationException::withMessages(['user' => 'You are already assigned.']);
-                        }
-
-                        $record->users()->attach($user->id, ['assigned_by' => $user->id]);
-                        $record->logAssignmentAdded($user->id);
+                        app(ScheduleAssignmentService::class)->assign($record, $user, $user);
                     }),
             ])
             ->paginated([5, 10, 25])
