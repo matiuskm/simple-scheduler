@@ -116,10 +116,10 @@ class MyUpcomingSchedules extends BaseWidget
     {
         return match ($liturgicalColor) {
             'hijau' => 'bg-green-50',
-            'merah' => 'bg-red-50',
+            'merah' => 'bg-red-200',
             'putih' => 'bg-white',
-            'merah muda' => 'bg-pink-50',
-            'ungu' => 'bg-purple-100',
+            'merah muda' => 'bg-pink-200',
+            'ungu' => 'bg-purple-200',
             default => '', };
     }
 }

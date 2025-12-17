@@ -26,11 +26,10 @@ class SchedulesTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('start_time')
-                    ->time(),
+                    ->time('H:i'),
                 TextColumn::make('location.name')
                     ->label('Location'),
                 TextColumn::make('status')
-                    ->label('Lifecycle')
                     ->state(fn(Schedule $record) => $record->lifecycle_status)
                     ->badge()
                     ->colors([
@@ -51,51 +50,6 @@ class SchedulesTable
                     ->extraAttributes(fn(Schedule $record) => [
                         'class' => self::liturgicalBadgeClasses($record->liturgical_color),
                     ]),
-                TextColumn::make('conflicts')
-                    ->label('Conflicts')
-                    ->getStateUsing(function (Schedule $record) {
-                        $summary = app(ScheduleConflictDetector::class)->summary($record);
-
-                        if (! $summary['has_conflicts']) {
-                            return 'None';
-                        }
-
-                        $parts = [];
-
-                        if ($summary['location_count'] > 0) {
-                            $parts[] = "Location ({$summary['location_count']})";
-                        }
-
-                        if ($summary['personnel_count'] > 0) {
-                            $parts[] = "Personnel ({$summary['personnel_count']})";
-                        }
-
-                        return implode(', ', $parts);
-                    })
-                    ->badge()
-                    ->colors([
-                        'success' => fn(Schedule $record) => ! app(ScheduleConflictDetector::class)->summary($record)['has_conflicts'],
-                        'warning' => fn() => true,
-                    ])
-                    ->tooltip(function (Schedule $record) {
-                        $detector = app(ScheduleConflictDetector::class);
-                        $locations = $detector->locationConflicts($record)
-                            ->map(fn(Schedule $c) => "{$c->title} ({$c->start_time}-{$c->end_time})")
-                            ->values();
-
-                        $personnel = $detector->personnelConflicts($record)
-                            ->map(function ($group, $userId) {
-                                return "User {$userId} overlaps " . $group->count() . " schedule(s)";
-                            })
-                            ->values();
-
-                        $lines = collect([
-                            $locations->isNotEmpty() ? 'Location conflicts: ' . $locations->implode('; ') : null,
-                            $personnel->isNotEmpty() ? 'Personnel conflicts: ' . $personnel->implode('; ') : null,
-                        ])->filter()->all();
-
-                        return empty($lines) ? 'No conflicts' : implode(' | ', $lines);
-                    }),
             ])
             ->filters([
                 Filter::make('upcoming')

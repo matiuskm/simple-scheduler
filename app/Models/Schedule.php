@@ -187,7 +187,8 @@ class Schedule extends Model {
             return false;
         }
 
-        return $this->assigned_count < $this->required_personnel;
+        // return $this->assigned_count < $this->required_personnel;
+        return true;
     }
 
     public function assertCanAssign(bool $asAdmin = false): void {
