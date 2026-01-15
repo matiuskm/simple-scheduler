@@ -12,7 +12,7 @@ use Filament\Forms\Components\TimePicker;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 
 class ScheduleForm
 {
@@ -31,22 +31,23 @@ class ScheduleForm
                 TimePicker::make('start_time')
                     ->seconds(false)
                     ->required()
-                    ->rules(function (Get $get) {
-                        $date = $get('scheduled_date');
-                        $locationId = $get('location_id');
+                    ->unique(
+                        table: 'schedules',
+                        column: 'start_time',
+                        ignoreRecord: true,
+                        modifyRuleUsing: function (Unique $rule, Get $get): Unique {
+                            $date = $get('scheduled_date');
+                            $locationId = $get('location_id');
 
-                        if (! $date || ! $locationId) {
-                            return [];
-                        }
+                            if (! $date || ! $locationId) {
+                                return $rule;
+                            }
 
-                        return [
-                            Rule::unique('schedules', 'start_time')
-                                ->where(fn ($query) => $query
-                                    ->where('scheduled_date', $date)
-                                    ->where('location_id', $locationId))
-                                ->ignore(request()->route('record')),
-                        ];
-                    })
+                            return $rule->where(fn ($query) => $query
+                                ->where('scheduled_date', $date)
+                                ->where('location_id', $locationId));
+                        },
+                    )
                     ->validationMessages([
                         'unique' => 'A schedule already exists at this time for the selected location.',
                     ]),
