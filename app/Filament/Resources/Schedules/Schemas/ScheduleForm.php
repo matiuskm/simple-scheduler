@@ -92,7 +92,6 @@ class ScheduleForm
                     ->multiple()
                     ->relationship('users', 'name')
                     ->searchable()
-                    ->required()
                     ->live()
                     ->rule(function (Get $get) {
                         return function (string $attribute, $value, Closure $fail) use ($get) {
