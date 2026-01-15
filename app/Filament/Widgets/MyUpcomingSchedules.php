@@ -20,7 +20,7 @@ class MyUpcomingSchedules extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'My Upcoming Schedules';
+    protected static ?string $heading = 'Jadwal Saya';
 
     protected function getTableQuery(): Builder
     {
