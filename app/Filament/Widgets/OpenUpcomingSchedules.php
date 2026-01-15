@@ -58,6 +58,7 @@ class OpenUpcomingSchedules extends BaseWidget
                         ->icon('heroicon-o-calendar-days'),
                     TextColumn::make('start_time')
                         ->time()
+                        ->grow(false)
                         ->formatStateUsing(fn ($state) => date('H:i', strtotime($state)))
                         ->label('Start')
                         ->icon('heroicon-o-clock'),

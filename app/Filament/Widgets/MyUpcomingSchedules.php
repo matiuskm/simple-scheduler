@@ -54,11 +54,10 @@ class MyUpcomingSchedules extends BaseWidget
                     TextColumn::make('scheduled_date')
                         ->date('l, j M Y')
                         ->label('Date')
-                        ->size(TextSize::ExtraSmall)
                         ->icon('heroicon-o-calendar-days'),
                     TextColumn::make('start_time')
                         ->time('H:i')
-                        ->size(TextSize::ExtraSmall)
+                        ->grow(false)
                         ->label('Start')
                         ->icon('heroicon-o-clock'),
                 ]),
