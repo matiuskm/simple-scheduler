@@ -1,9 +1,11 @@
-@if(config('app.env') === 'production' && env('GA_MEASUREMENT_ID'))
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ env('GA_MEASUREMENT_ID') }}"></script>
+@php($ga = config('services.ga4.measurement_id'))
+
+@if(app()->environment('production') && $ga)
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga }}"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '{{ env('GA_MEASUREMENT_ID') }}');
+        gtag('config', '{{ $ga }}');
     </script>
 @endif

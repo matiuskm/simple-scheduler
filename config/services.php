@@ -34,5 +34,8 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'ga4' => [
+        'measurement_id' => env('GA_MEASUREMENT_ID'),
+    ],
 
 ];
