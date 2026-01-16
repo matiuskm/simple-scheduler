@@ -30,10 +30,20 @@ class Announcement extends Model
     {
         static::saved(function (): void {
             Cache::forget(self::CACHE_KEY_ACTIVE);
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.1');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.2');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.3');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.4');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.5');
         });
 
         static::deleted(function (): void {
             Cache::forget(self::CACHE_KEY_ACTIVE);
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.1');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.2');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.3');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.4');
+            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.5');
         });
     }
 
@@ -55,6 +65,21 @@ class Announcement extends Model
                 ->orderByDesc('start_at')
                 ->orderByDesc('id')
                 ->first();
+        });
+    }
+
+    public static function activeListCached(int $limit = 3)
+    {
+        $ttlSeconds = (int) config('scheduler.announcement_cache_seconds', 60);
+        $limit = max(1, min(5, $limit));
+
+        return Cache::remember(self::CACHE_KEY_ACTIVE . ".list.{$limit}", $ttlSeconds, function () use ($limit) {
+            return self::query()
+                ->activeNow()
+                ->orderByDesc('start_at')
+                ->orderByDesc('id')
+                ->limit($limit)
+                ->get();
         });
     }
 }
