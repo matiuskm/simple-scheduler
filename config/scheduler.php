@@ -24,4 +24,14 @@ return [
     |
     */
     'email_notifications' => (bool) env('SCHEDULER_EMAIL_NOTIFICATIONS', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Announcement Banner Cache
+    |--------------------------------------------------------------------------
+    |
+    | Cache the active announcement banner for this many seconds.
+    |
+    */
+    'announcement_cache_seconds' => (int) env('SCHEDULER_ANNOUNCEMENT_CACHE_SECONDS', 60),
 ];

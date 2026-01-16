@@ -15,6 +15,7 @@ use Filament\Widgets\FilamentInfoWidget;
 use App\Filament\Widgets\MyUpcomingSchedules;
 use App\Filament\Widgets\OpenUpcomingSchedules;
 use Filament\Enums\ThemeMode;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -47,6 +48,14 @@ class AdminPanelProvider extends PanelProvider
                 MyUpcomingSchedules::class,
                 OpenUpcomingSchedules::class,
             ])
+            ->renderHook(
+                PanelsRenderHook::SIMPLE_LAYOUT_START,
+                fn () => view('components.announcement-banner')
+            )
+            ->renderHook(
+                PanelsRenderHook::LAYOUT_START,
+                fn () => view('components.announcement-banner')
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
