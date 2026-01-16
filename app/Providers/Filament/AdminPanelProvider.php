@@ -50,11 +50,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::SIMPLE_LAYOUT_START,
-                fn () => view('components.announcement-banner')
+                fn() => view('components.announcement-banner')
             )
             ->renderHook(
                 PanelsRenderHook::LAYOUT_START,
-                fn () => view('components.announcement-banner')
+                fn() => view('components.announcement-banner')
             )
             ->middleware([
                 EncryptCookies::class,
@@ -70,6 +70,10 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->renderHook(
+                'head.end',
+                fn() => view('partials.ga')
+            )
             ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }
