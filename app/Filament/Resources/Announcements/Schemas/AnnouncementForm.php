@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Announcements\Schemas;
 
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -18,9 +18,9 @@ class AnnouncementForm
                     ->required()
                     ->rows(4)
                     ->columnSpanFull(),
-                DateTimePicker::make('start_at')
+                DatePicker::make('start_at')
                     ->required(),
-                DateTimePicker::make('end_at')
+                DatePicker::make('end_at')
                     ->required()
                     ->after('start_at'),
                 TextInput::make('background_color')
