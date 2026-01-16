@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -57,7 +58,8 @@ class User extends Authenticatable implements FilamentUser
         return (bool) $this->is_admin;
     }
 
-    public function canAccessFilament(): bool {
+    public function canAccessPanel(Panel $panel): bool
+    {
         return true;
     }
 }
