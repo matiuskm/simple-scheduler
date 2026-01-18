@@ -4,12 +4,10 @@ namespace App\Filament\Resources\Schedules\Pages;
 
 use App\Filament\Resources\Schedules\ScheduleResource;
 use App\Models\User;
-use App\Filament\Resources\Schedules\ScheduleResource;
 use App\Notifications\ScheduleAssignmentConfirmed;
 use App\Notifications\ScheduleForcedRelease;
 use Illuminate\Validation\ValidationException;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 
 class EditSchedule extends EditRecord
@@ -24,15 +22,6 @@ class EditSchedule extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('google_calendar')
-                ->label('Google Calendar')
-                ->icon('heroicon-o-arrow-top-right-on-square')
-                ->url(fn () => ScheduleResource::googleCalendarUrl($this->record))
-                ->openUrlInNewTab(),
-            Action::make('download_ics')
-                ->label('Download .ics')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->url(fn () => ScheduleResource::scheduleIcsUrl($this->record)),
             DeleteAction::make(),
         ];
     }
