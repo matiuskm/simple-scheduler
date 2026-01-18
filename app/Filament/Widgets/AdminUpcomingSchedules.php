@@ -27,10 +27,22 @@ class AdminUpcomingSchedules extends BaseWidget
 
     protected function getTableQuery(): Builder
     {
+        $jakartaNow = now('Asia/Jakarta');
+        $jakartaToday = $jakartaNow->toDateString();
+
         return Schedule::query()
             ->with(['location', 'users'])
             ->upcomingVisible()
-            ->where('status', Schedule::STATUS_PUBLISHED);
+            ->where('status', Schedule::STATUS_PUBLISHED)
+            ->where(function (Builder $query) use ($jakartaNow, $jakartaToday): void {
+                $query
+                    ->whereDate('scheduled_date', '>', $jakartaToday)
+                    ->orWhere(function (Builder $query) use ($jakartaNow, $jakartaToday): void {
+                        $query
+                            ->whereDate('scheduled_date', $jakartaToday)
+                            ->whereTime('start_time', '>=', $jakartaNow->format('H:i:s'));
+                    });
+            });
     }
 
     public function table(Table $table): Table
