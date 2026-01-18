@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Schedules\Pages;
 
 use App\Filament\Resources\Schedules\ScheduleResource;
 use App\Models\User;
-use App\Filament\Resources\Schedules\ScheduleResource;
 use App\Notifications\ScheduleAssignmentConfirmed;
 use App\Notifications\ScheduleForcedRelease;
 use Illuminate\Validation\ValidationException;
