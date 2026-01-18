@@ -41,13 +41,15 @@ class IcsCalendarService
 
     public function formatDateTimeJakarta($date, $time): CarbonImmutable
     {
+        if ($time instanceof \DateTimeInterface) {
+            $timeString = $time->format('H:i:s');
+        } else {
+            $timeString = (string) $time;
+        }
+
         $dateString = $date instanceof \DateTimeInterface
             ? $date->format('Y-m-d')
             : (string) $date;
-
-        $timeString = $time instanceof \DateTimeInterface
-            ? $time->format('H:i:s')
-            : (string) $time;
 
         if (strlen($timeString) === 5) {
             $timeString .= ':00';

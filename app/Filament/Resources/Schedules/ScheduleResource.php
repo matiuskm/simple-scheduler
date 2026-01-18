@@ -63,14 +63,8 @@ class ScheduleResource extends Resource
     {
         $timezone = 'Asia/Jakarta';
 
-        $start = CarbonImmutable::parse(
-            "{$schedule->scheduled_date} {$schedule->start_time}",
-            $timezone
-        );
-
-        $end = $schedule->end_time
-            ? CarbonImmutable::parse("{$schedule->scheduled_date} {$schedule->end_time}", $timezone)
-            : $start->addMinutes(90);
+        $start = $schedule->starts_at->setTimezone($timezone);
+        $end = ($schedule->ends_at ?? $start->addMinutes(90))->setTimezone($timezone);
 
         $location = $schedule->location?->name ?? '-';
         $details = "Jadwal tugas: {$schedule->title} | Lokasi: {$location}";
