@@ -15,6 +15,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
 use App\Services\ScheduleAssignmentService;
+use App\Filament\Resources\Schedules\ScheduleResource;
 
 class MyUpcomingSchedules extends BaseWidget
 {
@@ -88,6 +89,15 @@ class MyUpcomingSchedules extends BaseWidget
                     ->collapsed(),
             ])
             ->recordActions([
+                Action::make('google_calendar')
+                    ->label('Google Calendar')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(fn (Schedule $record) => ScheduleResource::googleCalendarUrl($record))
+                    ->openUrlInNewTab(),
+                Action::make('download_ics')
+                    ->label('Download .ics')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn (Schedule $record) => ScheduleResource::scheduleIcsUrl($record)),
                 Action::make('release')
                     ->label('Lepas')
                     ->icon('heroicon-o-arrow-left-on-rectangle')

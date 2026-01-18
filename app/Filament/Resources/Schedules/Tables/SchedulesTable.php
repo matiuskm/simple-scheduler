@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Schedules\Tables;
 
 use App\Models\Schedule;
-use App\Filament\Resources\Schedules\ScheduleResource;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -69,15 +67,6 @@ class SchedulesTable
                     ->query(fn(Builder $query): Builder => $query->hasConflicts()),
             ])
             ->recordActions([
-                Action::make('google_calendar')
-                    ->label('Google Calendar')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (Schedule $record) => ScheduleResource::googleCalendarUrl($record))
-                    ->openUrlInNewTab(),
-                Action::make('download_ics')
-                    ->label('Download .ics')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (Schedule $record) => ScheduleResource::scheduleIcsUrl($record)),
                 EditAction::make()
                     ->disabled(fn(Schedule $record) => ! $record->canAssign(auth()->user()?->isAdmin())),
             ])
