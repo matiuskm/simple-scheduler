@@ -12,6 +12,7 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use App\Filament\Widgets\AdminUpcomingSchedules;
 use App\Filament\Widgets\MyUpcomingSchedules;
 use App\Filament\Widgets\OpenUpcomingSchedules;
 use Filament\Enums\ThemeMode;
@@ -47,6 +48,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 MyUpcomingSchedules::class,
                 OpenUpcomingSchedules::class,
+                AdminUpcomingSchedules::class,
             ])
             ->renderHook(
                 PanelsRenderHook::SIMPLE_LAYOUT_START,
