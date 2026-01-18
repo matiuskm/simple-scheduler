@@ -10,6 +10,7 @@ use App\Filament\Resources\Schedules\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Schedules\Schemas\ScheduleForm;
 use App\Filament\Resources\Schedules\Tables\SchedulesTable;
 use Carbon\CarbonImmutable;
+use App\Services\IcsCalendarService;
 use App\Models\Schedule;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -63,8 +64,11 @@ class ScheduleResource extends Resource
     {
         $timezone = 'Asia/Jakarta';
 
-        $start = $schedule->starts_at->setTimezone($timezone);
-        $end = ($schedule->ends_at ?? $start->addMinutes(90))->setTimezone($timezone);
+        $calendarService = new IcsCalendarService();
+        $start = $calendarService->formatDateTimeJakarta($schedule->scheduled_date, $schedule->start_time);
+        $end = $schedule->end_time
+            ? $calendarService->formatDateTimeJakarta($schedule->scheduled_date, $schedule->end_time)
+            : $start->addMinutes(90);
 
         $location = $schedule->location?->name ?? '-';
         $details = "Jadwal tugas: {$schedule->title} | Lokasi: {$location}";
