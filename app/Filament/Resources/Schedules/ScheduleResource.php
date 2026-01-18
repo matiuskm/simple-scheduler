@@ -9,6 +9,7 @@ use App\Filament\Resources\Schedules\RelationManagers\UsersRelationManager;
 use App\Filament\Resources\Schedules\RelationManagers\AuditLogsRelationManager;
 use App\Filament\Resources\Schedules\Schemas\ScheduleForm;
 use App\Filament\Resources\Schedules\Tables\SchedulesTable;
+use App\Services\IcsCalendarService;
 use App\Models\Schedule;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -56,5 +57,34 @@ class ScheduleResource extends Resource
 
     public static function canAccess(): bool {
         return auth()->user()?->isAdmin();
+    }
+
+    public static function googleCalendarUrl(Schedule $schedule): string
+    {
+        $timezone = 'Asia/Jakarta';
+
+        $calendarService = new IcsCalendarService();
+        $start = $calendarService->formatDateTimeJakarta($schedule->scheduled_date, $schedule->start_time);
+        $end = $schedule->end_time
+            ? $calendarService->formatDateTimeJakarta($schedule->scheduled_date, $schedule->end_time)
+            : $start->addMinutes(90);
+
+        $location = $schedule->location?->name ?? '-';
+        $details = "Jadwal tugas: {$schedule->title} | Lokasi: {$location}";
+
+        $params = [
+            'action' => 'TEMPLATE',
+            'text' => $schedule->title,
+            'dates' => $start->format('Ymd\THis') . '/' . $end->format('Ymd\THis'),
+            'details' => $details,
+            'location' => $location,
+        ];
+
+        return 'https://calendar.google.com/calendar/render?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+    }
+
+    public static function scheduleIcsUrl(Schedule $schedule): string
+    {
+        return route('schedules.calendar.ics', $schedule);
     }
 }
