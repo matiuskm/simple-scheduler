@@ -1,11 +1,15 @@
 # Simple Scheduler & Assignment Tool
 
-A small internal scheduling application built with **Laravel 12** and **Filament v4**.  
-This project focuses on managing schedules, locations, and personnel assignments with quota control and role-based access.
+Internal scheduling app for managing locations, schedules, and personnel assignments with quota control and role-based access.
 
-The goal of this project is **not** to build a full-featured calendar system, but to demonstrate clean domain modeling, Laravel relationships, and practical usage of Filament for admin workflows.
+Built with **Laravel 12** + **Filament v4**. The scope is intentionally focused: admin workflows first, clean domain modeling, and practical Filament usage.
 
----
+## ✨ Highlights
+- Admin-managed schedules with quota enforcement
+- Role-based access via `is_admin`
+- Conflict and audit tracking
+- Add-to-calendar (Google Calendar + .ics download)
+- Announcement banner for global notices
 
 ## 🎯 Problem Statement
 
@@ -29,13 +33,13 @@ This app solves that problem by providing:
 - Define required personnel (quota) per schedule
 - Assign users to schedules
 - Automatically detect when a schedule is **full**
+ - Publish announcements
 
 ### User
 - View assigned schedules
 - See upcoming schedules only
 - No access to drafts or admin-only data
-
----
+ - Add schedules to calendar
 
 ## 🧱 Domain Model
 
@@ -44,6 +48,7 @@ This app solves that problem by providing:
 - **Location**
 - **Schedule**
 - **ScheduleUser** (pivot table)
+- **Announcement**
 
 ### Relationships
 - One location → many schedules  
@@ -73,16 +78,17 @@ This app solves that problem by providing:
 |------|------|
 | id | bigint |
 | title | string |
-| date | date |
+| scheduled_date | date |
 | start_time | time |
 | end_time | time (nullable) |
 | location_id | foreign key |
-| status | enum (draft, published) |
+| status | enum (draft, published, open, full, locked, completed, cancelled) |
 | required_personnel | integer |
+| liturgical_color | string (nullable) |
 
 Unique constraint:
 ```
-(date, start_time, location_id)
+(scheduled_date, start_time, location_id)
 ```
 
 ### `schedule_user`
@@ -91,8 +97,6 @@ Unique constraint:
 | schedule_id | foreign key |
 | user_id | foreign key |
 | assigned_by | foreign key (nullable) |
-
----
 
 ## 🖥️ Admin Panel (Filament)
 
@@ -107,8 +111,6 @@ The admin panel is built using **Filament v4** and includes:
 
 Quota enforcement is handled directly in the assignment logic.
 
----
-
 ## 🛠️ Tech Stack
 
 - **Backend:** Laravel 12
@@ -116,8 +118,7 @@ Quota enforcement is handled directly in the assignment logic.
 - **Database:** MySQL
 - **Authentication:** Laravel default auth
 - **Authorization:** Policies + role flag (`is_admin`)
-
----
+ - **Frontend:** Vite + Tailwind
 
 ## 🚀 Installation
 
@@ -140,7 +141,11 @@ Access admin panel at:
 /admin
 ```
 
----
+## 🧪 Testing
+
+```bash
+php artisan test
+```
 
 ## 📌 Design Decisions
 
@@ -172,8 +177,6 @@ This project is part of a personal portfolio and is designed to demonstrate:
 - Practical Filament usage
 - Real-world admin use cases
 - Strong scope control and project completion
-
----
 
 ## 📄 License
 
