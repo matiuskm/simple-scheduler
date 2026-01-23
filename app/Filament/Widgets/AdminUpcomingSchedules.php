@@ -109,11 +109,11 @@ class AdminUpcomingSchedules extends BaseWidget
     private function liturgicalColorClasses(?string $liturgicalColor): string
     {
         return match ($liturgicalColor) {
-            'hijau' => 'bg-green-50',
-            'merah' => 'bg-red-200',
-            'putih' => 'bg-white',
-            'merah muda' => 'bg-pink-200',
-            'ungu' => 'bg-purple-200',
+            'hijau' => 'bg-hijau',
+            'merah' => 'bg-merah',
+            'putih' => 'bg-putih',
+            'merah muda' => 'bg-pink',
+            'ungu' => 'bg-ungu',
             default => '',
         };
     }

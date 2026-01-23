@@ -6,3 +6,98 @@
 .__row_debug_bg {
     background: hotpink !important;
 }
+
+.bg-merah {
+    color: #fff !important;
+    background-color: #e74c3c !important;
+}
+
+.bg-merah .fi-ta-text,
+.bg-merah .fi-ta-text-item,
+.bg-merah .fi-ta-icon,
+.bg-merah .fi-icon,
+.bg-merah .fi-ta-badge,
+.bg-merah .fi-ta-badge .fi-badge-label,
+.bg-merah a {
+    color: #fff !important;
+}
+
+.bg-merah .fi-ta-icon svg {
+    stroke: currentColor !important;
+}
+
+.bg-putih {
+    color: #000 !important;
+    background-color: #fff;
+}
+
+.bg-putih .fi-ta-text,
+.bg-putih .fi-ta-text-item,
+.bg-putih .fi-ta-icon,
+.bg-putih .fi-icon,
+.bg-putih .fi-ta-badge,
+.bg-putih .fi-ta-badge .fi-badge-label,
+.bg-putih a {
+    color: #000 !important;
+}
+
+.bg-putih .fi-ta-icon svg {
+    stroke: currentColor !important;
+}
+
+.bg-hijau {
+    color: #fff !important;
+    background-color: #00bc8c !important;
+}
+
+.bg-hijau .fi-ta-text,
+.bg-hijau .fi-ta-text-item,
+.bg-hijau .fi-ta-icon,
+.bg-hijau .fi-icon,
+.bg-hijau .fi-ta-badge,
+.bg-hijau .fi-ta-badge .fi-badge-label,
+.bg-hijau a {
+    color: #fff !important;
+}
+
+.bg-hijau .fi-ta-icon svg {
+    stroke: currentColor !important;
+}
+
+.bg-ungu {
+    color: #fff !important;
+    background-color: #815e92 !important;
+}
+
+.bg-ungu .fi-ta-text,
+.bg-ungu .fi-ta-text-item,
+.bg-ungu .fi-ta-icon,
+.bg-ungu .fi-icon,
+.bg-ungu .fi-ta-badge,
+.bg-ungu .fi-ta-badge .fi-badge-label,
+.bg-ungu a {
+    color: #fff !important;
+}
+
+.bg-ungu .fi-ta-icon svg {
+    stroke: currentColor !important;
+}
+
+.bg-pink {
+    color: #000 !important;
+    background-color: #ff6cb8 !important;
+}
+
+.bg-pink .fi-ta-text,
+.bg-pink .fi-ta-text-item,
+.bg-pink .fi-ta-icon,
+.bg-pink .fi-icon,
+.bg-pink .fi-ta-badge,
+.bg-pink .fi-ta-badge .fi-badge-label,
+.bg-pink a {
+    color: #000 !important;
+}
+
+.bg-pink .fi-ta-icon svg {
+    stroke: currentColor !important;
+}
