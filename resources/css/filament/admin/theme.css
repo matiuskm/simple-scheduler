@@ -13,13 +13,16 @@
 }
 
 .bg-merah .fi-ta-text,
-.bg-merah .fi-ta-text-item,
 .bg-merah .fi-ta-icon,
 .bg-merah .fi-icon,
 .bg-merah .fi-ta-badge,
 .bg-merah .fi-ta-badge .fi-badge-label,
 .bg-merah a {
     color: #fff !important;
+}
+
+.bg-merah .fi-ta-text-item {
+    color: #000 !important;
 }
 
 .bg-merah .fi-ta-icon svg {
@@ -51,13 +54,16 @@
 }
 
 .bg-hijau .fi-ta-text,
-.bg-hijau .fi-ta-text-item,
 .bg-hijau .fi-ta-icon,
 .bg-hijau .fi-icon,
 .bg-hijau .fi-ta-badge,
 .bg-hijau .fi-ta-badge .fi-badge-label,
 .bg-hijau a {
     color: #fff !important;
+}
+
+.bg-hijau .fi-ta-text-item {
+    color: #000 !important;
 }
 
 .bg-hijau .fi-ta-icon svg {
@@ -70,7 +76,6 @@
 }
 
 .bg-ungu .fi-ta-text,
-.bg-ungu .fi-ta-text-item,
 .bg-ungu .fi-ta-icon,
 .bg-ungu .fi-icon,
 .bg-ungu .fi-ta-badge,
@@ -78,6 +83,11 @@
 .bg-ungu a {
     color: #fff !important;
 }
+
+.bg-ungu .fi-ta-text-item {
+    color: #000 !important;
+}
+
 
 .bg-ungu .fi-ta-icon svg {
     stroke: currentColor !important;
