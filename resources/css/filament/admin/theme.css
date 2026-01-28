@@ -17,6 +17,7 @@
 .bg-merah .fi-icon,
 .bg-merah .fi-ta-badge,
 .bg-merah .fi-ta-badge .fi-badge-label,
+.bg-merah .fi-ac-link-action,
 .bg-merah a {
     color: #fff !important;
 }
@@ -40,6 +41,7 @@
 .bg-putih .fi-icon,
 .bg-putih .fi-ta-badge,
 .bg-putih .fi-ta-badge .fi-badge-label,
+.bg-putih .fi-ac-link-action,
 .bg-putih a {
     color: #000 !important;
 }
@@ -58,6 +60,7 @@
 .bg-hijau .fi-icon,
 .bg-hijau .fi-ta-badge,
 .bg-hijau .fi-ta-badge .fi-badge-label,
+.bg-hijau .fi-ac-link-action,
 .bg-hijau a {
     color: #fff !important;
 }
@@ -80,6 +83,7 @@
 .bg-ungu .fi-icon,
 .bg-ungu .fi-ta-badge,
 .bg-ungu .fi-ta-badge .fi-badge-label,
+.bg-ungu .fi-ac-link-action,
 .bg-ungu a {
     color: #fff !important;
 }
@@ -104,6 +108,7 @@
 .bg-pink .fi-icon,
 .bg-pink .fi-ta-badge,
 .bg-pink .fi-ta-badge .fi-badge-label,
+.bg-pink .fi-ac-link-action,
 .bg-pink a {
     color: #000 !important;
 }
