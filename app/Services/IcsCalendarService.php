@@ -8,6 +8,8 @@ use Carbon\CarbonImmutable;
 class IcsCalendarService
 {
     private const TIMEZONE = 'Asia/Jakarta';
+    private const REMINDER_TRIGGER = '-PT2H';
+    private const REMINDER_DESCRIPTION = 'Schedule reminder';
 
     public function makeScheduleIcs(Schedule $schedule): string
     {
@@ -32,6 +34,11 @@ class IcsCalendarService
             'SUMMARY:' . $this->escapeIcsText($schedule->title ?? 'Schedule'),
             'LOCATION:' . $this->escapeIcsText($this->resolveLocation($schedule)),
             'DESCRIPTION:' . $this->escapeIcsText($schedule->liturgical_color ?? ''),
+            'BEGIN:VALARM',
+            'TRIGGER:' . self::REMINDER_TRIGGER,
+            'ACTION:DISPLAY',
+            'DESCRIPTION:' . $this->escapeIcsText(self::REMINDER_DESCRIPTION),
+            'END:VALARM',
             'END:VEVENT',
             'END:VCALENDAR',
         ];
