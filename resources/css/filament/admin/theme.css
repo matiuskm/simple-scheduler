@@ -116,3 +116,7 @@
 .bg-pink .fi-ta-icon svg {
     stroke: currentColor !important;
 }
+
+button .fi-icon{
+    stroke: white !important;
+}
