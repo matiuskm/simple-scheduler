@@ -99,9 +99,10 @@ class MyUpcomingSchedules extends BaseWidget
                 //     ->icon('heroicon-o-arrow-down-tray')
                 //     ->url(fn (Schedule $record) => ScheduleResource::scheduleIcsUrl($record)),
                 Action::make('release')
+                    ->button()
                     ->label('Lepas')
                     ->icon('heroicon-o-arrow-left-on-rectangle')
-                    ->color('danger')
+                    ->color('info')
                     ->requiresConfirmation()
                     ->action(function (Schedule $record) {
                         $user = auth()->user();

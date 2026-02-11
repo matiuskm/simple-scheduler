@@ -88,8 +88,10 @@ class OpenUpcomingSchedules extends BaseWidget
             ])
             ->recordActions([
                 Action::make('request')
+                    ->button()
                     ->label('Ambil')
                     ->icon('heroicon-o-plus')
+                    ->color('info')
                     ->requiresConfirmation()
                     ->action(function (Schedule $record) {
                         $user = auth()->user();
