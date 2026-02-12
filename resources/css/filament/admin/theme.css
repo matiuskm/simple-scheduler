@@ -117,32 +117,55 @@
     stroke: currentColor !important;
 }
 
-button {
-    padding: 8px;
+button.btn-lepas,
+button.btn-ambil{
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.1 !important;
 }
 
-.btn-lepas {
-  background: #AFC8FF;
-  color: #1F2A44;
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-weight: 500;
+/* warna tombol */
+button.btn-lepas{
+  background-color: #AFC8FF !important;
+  color: currentColor !important;
+}
+button.btn-lepas:hover{
+  background-color: #9DB8F5 !important;
 }
 
-.btn-lepas:hover {
-  background: #9DB8F5;
+button.btn-ambil{
+  background-color: #7FC8A9 !important;
+  color: currentColor !important;
+}
+button.btn-ambil:hover{
+  background-color: #6FB89A !important;
 }
 
-.btn-ambil {
-  background: #7FC8A9;
-  color: #0f2e22;
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-weight: 500;
+/* icon di tombol jangan ikut-ikutan rule .bg-* yang maksa putih/hitam */
+button.btn-lepas .fi-icon,
+button.btn-ambil .fi-icon,
+button.btn-lepas svg,
+button.btn-ambil svg,
+button.btn-lepas svg *,
+button.btn-ambil svg *{
+  stroke: currentColor !important;
+  opacity: 1 !important;
+  stroke-width: 2px !important;
 }
 
-.btn-ambil:hover {
-  background: #6FB89A;
+/* ======================================================
+   PATCH 3: Chevron collapse jangan ikut rusak
+====================================================== */
+button.fi-ta-record-collapse-btn.fi-icon-btn{
+  padding: 6px !important;              /* biar ada hit area */
+  border-radius: 999px !important;
+  background: rgba(0,0,0,.08) !important;
+}
+.bg-hijau button.fi-ta-record-collapse-btn.fi-icon-btn,
+.bg-merah button.fi-ta-record-collapse-btn.fi-icon-btn,
+.bg-ungu  button.fi-ta-record-collapse-btn.fi-icon-btn{
+  background: rgba(255,255,255,.18) !important;
 }
 
 button.fi-topbar-open-sidebar-btn .fi-icon {
@@ -152,3 +175,30 @@ button.fi-topbar-open-sidebar-btn .fi-icon {
     min-width: 24px !important;
     min-height: 24px !important;
 }
+
+/* ========================================
+   FIX ICON OUTLINE SUPAYA TIDAK JADI SOLID
+======================================== */
+
+/* semua icon default = outline */
+.fi-icon svg,
+.fi-icon svg *{
+  fill: none !important;
+  stroke: currentColor !important;
+}
+
+/* icon di dalam button */
+button .fi-icon,
+button .fi-icon svg,
+button .fi-icon svg *{
+  fill: none !important;
+  stroke: currentColor !important;
+}
+
+/* chevron collapse */
+button.fi-ta-record-collapse-btn svg,
+button.fi-ta-record-collapse-btn svg *{
+  fill: currentColor !important;   /* chevron memang solid */
+  stroke: none !important;
+}
+

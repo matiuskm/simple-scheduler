@@ -58,12 +58,9 @@ class ScheduleForm
                     ->options([
                         'draft' => 'Draft',
                         'published' => 'Published',
-                        'locked' => 'Locked',
-                        'completed' => 'Completed',
-                        'cancelled' => 'Cancelled',
                     ])
                     ->required()
-                    ->default('draft'),
+                    ->default('published'),
                 TextInput::make('required_personnel')
                     ->numeric()
                     ->minValue(1)
@@ -86,8 +83,7 @@ class ScheduleForm
                         'merah muda' => 'Merah muda',
                         'ungu' => 'Ungu',
                     ])
-                    ->searchable()
-                    ->nullable(),
+                    ->default('putih'),
                 Select::make('user_id')
                     ->multiple()
                     ->relationship('users', 'name')

@@ -101,7 +101,7 @@ class MyUpcomingSchedules extends BaseWidget
                 Action::make('release')
                     ->button()
                     ->label('Lepas')
-                    ->icon('heroicon-o-arrow-left-on-rectangle')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
                     ->extraAttributes([
                         'class' => 'btn-lepas',
                     ])
