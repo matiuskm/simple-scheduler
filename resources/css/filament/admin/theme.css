@@ -117,6 +117,38 @@
     stroke: currentColor !important;
 }
 
-button .fi-icon{
-    stroke: white !important;
+button {
+    padding: 8px;
+}
+
+.btn-lepas {
+  background: #AFC8FF;
+  color: #1F2A44;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: 500;
+}
+
+.btn-lepas:hover {
+  background: #9DB8F5;
+}
+
+.btn-ambil {
+  background: #7FC8A9;
+  color: #0f2e22;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-weight: 500;
+}
+
+.btn-ambil:hover {
+  background: #6FB89A;
+}
+
+button.fi-topbar-open-sidebar-btn .fi-icon {
+    stroke-width: 2px;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
 }

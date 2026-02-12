@@ -102,7 +102,9 @@ class MyUpcomingSchedules extends BaseWidget
                     ->button()
                     ->label('Lepas')
                     ->icon('heroicon-o-arrow-left-on-rectangle')
-                    ->color('info')
+                    ->extraAttributes([
+                        'class' => 'btn-lepas',
+                    ])
                     ->requiresConfirmation()
                     ->action(function (Schedule $record) {
                         $user = auth()->user();

@@ -30,27 +30,27 @@ class OpenUpcomingSchedules extends BaseWidget
             ->with(['location', 'users'])
             ->upcomingVisible()
             ->needingPersonnel()
-            ->when($user, fn (Builder $query) => $query->whereDoesntHave('users', fn ($q) => $q->where('users.id', $user->id)));
+            ->when($user, fn(Builder $query) => $query->whereDoesntHave('users', fn($q) => $q->where('users.id', $user->id)));
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordClasses(fn (Schedule $record) => $this->liturgicalColorClasses($record->liturgical_color))
+            ->recordClasses(fn(Schedule $record) => $this->liturgicalColorClasses($record->liturgical_color))
             ->columns([
                 TextColumn::make('title')
                     ->label('Schedule')
                     ->wrap()
                     ->weight(FontWeight::ExtraBold)
                     ->size(TextSize::Large)
-                    ->formatStateUsing(fn ($state) => "🗓️ {$state}"),
+                    ->formatStateUsing(fn($state) => "🗓️ {$state}"),
                 TextColumn::make('location.name')
                     ->label('Location')
                     ->icon('heroicon-o-map-pin')
                     ->weight('medium'),
                 TextColumn::make('liturgical_color')
                     ->size(TextSize::ExtraSmall)
-                    ->formatStateUsing(fn ($state) => $state ? 'Warna Liturgi: '.ucfirst($state) : '-'),
+                    ->formatStateUsing(fn($state) => $state ? 'Warna Liturgi: ' . ucfirst($state) : '-'),
                 Split::make([
                     TextColumn::make('scheduled_date')
                         ->date('D, j M Y')
@@ -59,7 +59,7 @@ class OpenUpcomingSchedules extends BaseWidget
                     TextColumn::make('start_time')
                         ->time()
                         ->grow(false)
-                        ->formatStateUsing(fn ($state) => date('H:i', strtotime($state)))
+                        ->formatStateUsing(fn($state) => date('H:i', strtotime($state)))
                         ->label('Start')
                         ->icon('heroicon-o-clock'),
                 ]),
@@ -68,19 +68,19 @@ class OpenUpcomingSchedules extends BaseWidget
                         ->label('Status')
                         ->badge()
                         ->colors([
-                        'success' => Schedule::STATUS_OPEN,
-                        'warning' => Schedule::STATUS_FULL,
-                    ]),
+                            'success' => Schedule::STATUS_OPEN,
+                            'warning' => Schedule::STATUS_FULL,
+                        ]),
                     TextColumn::make('capacity')
                         ->label('Capacity')
-                        ->getStateUsing(fn (Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
+                        ->getStateUsing(fn(Schedule $record) => "{$record->assigned_count} / {$record->required_personnel}")
                         ->badge()
-                        ->color(fn (Schedule $record) => $record->isFull ? 'warning' : 'success'),
+                        ->color(fn(Schedule $record) => $record->isFull ? 'warning' : 'success'),
                 ]),
                 Panel::make([
                     TextColumn::make('personnel')
                         ->label('Personnel')
-                        ->getStateUsing(fn (Schedule $record) => $record->users->pluck('name')->filter()->values()->all())
+                        ->getStateUsing(fn(Schedule $record) => $record->users->pluck('name')->filter()->values()->all())
                         ->listWithLineBreaks()
                         ->bulleted()
                         ->placeholder('None assigned'),
@@ -91,7 +91,9 @@ class OpenUpcomingSchedules extends BaseWidget
                     ->button()
                     ->label('Ambil')
                     ->icon('heroicon-o-plus')
-                    ->color('info')
+                    ->extraAttributes([
+                        'class' => 'btn-ambil',
+                    ])
                     ->requiresConfirmation()
                     ->action(function (Schedule $record) {
                         $user = auth()->user();
