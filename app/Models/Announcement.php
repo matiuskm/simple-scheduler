@@ -10,7 +10,7 @@ class Announcement extends Model
 {
     use HasFactory;
 
-    public const CACHE_KEY_ACTIVE = 'announcement.active';
+    public const CACHE_KEY_ACTIVE = 'announcement.active.v2';
 
     protected $fillable = [
         'message',
@@ -30,20 +30,20 @@ class Announcement extends Model
     {
         static::saved(function (): void {
             Cache::forget(self::CACHE_KEY_ACTIVE);
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.1');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.2');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.3');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.4');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.5');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.1');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.2');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.3');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.4');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.5');
         });
 
         static::deleted(function (): void {
             Cache::forget(self::CACHE_KEY_ACTIVE);
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.1');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.2');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.3');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.4');
-            Cache::forget(self::CACHE_KEY_ACTIVE . '.list.5');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.1');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.2');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.3');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.4');
+            Cache::forget(self::CACHE_KEY_ACTIVE.'.list.5');
         });
     }
 
@@ -59,13 +59,15 @@ class Announcement extends Model
     {
         $ttlSeconds = (int) config('scheduler.announcement_cache_seconds', 60);
 
-        return Cache::remember(self::CACHE_KEY_ACTIVE, $ttlSeconds, function (): ?self {
+        $id = Cache::remember(self::CACHE_KEY_ACTIVE, $ttlSeconds, function (): ?int {
             return self::query()
                 ->activeNow()
                 ->orderByDesc('start_at')
                 ->orderByDesc('id')
-                ->first();
+                ->value('id');
         });
+
+        return $id ? self::query()->find($id) : null;
     }
 
     public static function activeListCached(int $limit = 3)
@@ -73,13 +75,26 @@ class Announcement extends Model
         $ttlSeconds = (int) config('scheduler.announcement_cache_seconds', 60);
         $limit = max(1, min(5, $limit));
 
-        return Cache::remember(self::CACHE_KEY_ACTIVE . ".list.{$limit}", $ttlSeconds, function () use ($limit) {
+        $ids = Cache::remember(self::CACHE_KEY_ACTIVE.".list.{$limit}", $ttlSeconds, function () use ($limit): array {
             return self::query()
                 ->activeNow()
                 ->orderByDesc('start_at')
                 ->orderByDesc('id')
                 ->limit($limit)
-                ->get();
+                ->pluck('id')
+                ->all();
         });
+
+        if ($ids === []) {
+            return self::query()->whereKey([])->get();
+        }
+
+        $sortOrder = array_flip($ids);
+
+        return self::query()
+            ->whereKey($ids)
+            ->get()
+            ->sortBy(fn (self $announcement): int => $sortOrder[$announcement->getKey()])
+            ->values();
     }
 }

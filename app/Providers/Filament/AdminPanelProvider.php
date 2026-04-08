@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\AdminUpcomingSchedules;
+use App\Filament\Widgets\MyUpcomingSchedules;
+use App\Filament\Widgets\OpenUpcomingSchedules;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,16 +13,11 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
-use App\Filament\Widgets\AdminUpcomingSchedules;
-use App\Filament\Widgets\MyUpcomingSchedules;
-use App\Filament\Widgets\OpenUpcomingSchedules;
-use Filament\Enums\ThemeMode;
 use Filament\View\PanelsRenderHook;
+use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -52,11 +50,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::SIMPLE_LAYOUT_START,
-                fn() => view('components.announcement-banner')
+                fn () => view('components.announcement-banner')
             )
             ->renderHook(
                 PanelsRenderHook::LAYOUT_START,
-                fn() => view('components.announcement-banner')
+                fn () => view('components.announcement-banner')
             )
             ->middleware([
                 EncryptCookies::class,
@@ -64,7 +62,7 @@ class AdminPanelProvider extends PanelProvider
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
+                PreventRequestForgery::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
@@ -74,7 +72,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 'head.end',
-                fn() => view('partials.ga')
+                fn () => view('partials.ga')
             )
             ->viteTheme('resources/css/filament/admin/theme.css');
     }

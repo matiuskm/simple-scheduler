@@ -90,7 +90,7 @@ class MyUpcomingSchedules extends BaseWidget
             ])
             ->recordActions([
                 Action::make('google_calendar')
-                    ->label('Tambah ke Google Calendar')
+                    ->label('Tambah ke Kalender')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(fn (Schedule $record) => ScheduleResource::googleCalendarUrl($record))
                     ->openUrlInNewTab(),
