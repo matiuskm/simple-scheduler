@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\ScheduleAssignmentService;
+use App\Services\ScheduleConflictDetector;
 use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,20 +12,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\ScheduleAuditLog;
-use App\Services\ScheduleConflictDetector;
-use App\Models\AssignmentRequest;
-use App\Services\ScheduleAssignmentService;
 
-class Schedule extends Model {
+class Schedule extends Model
+{
     use HasFactory;
 
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_PUBLISHED = 'published';
+
     public const STATUS_OPEN = 'open';
+
     public const STATUS_FULL = 'full';
+
     public const STATUS_LOCKED = 'locked';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [
@@ -57,15 +62,18 @@ class Schedule extends Model {
         });
     }
 
-    public function isPublished(): bool {
+    public function isPublished(): bool
+    {
         return $this->status === self::STATUS_PUBLISHED;
     }
 
-    public function location(): BelongsTo {
+    public function location(): BelongsTo
+    {
         return $this->belongsTo(Location::class);
     }
 
-    public function users(): BelongsToMany {
+    public function users(): BelongsToMany
+    {
         return $this->belongsToMany(User::class)
             ->withTimestamps()
             ->withPivot('assigned_by');
@@ -81,7 +89,8 @@ class Schedule extends Model {
         return $this->hasMany(AssignmentRequest::class);
     }
 
-    public function scopeUpcoming($query) {
+    public function scopeUpcoming($query)
+    {
         return $query->upcomingVisible();
     }
 
@@ -93,15 +102,18 @@ class Schedule extends Model {
             ->orderBy('start_time');
     }
 
-    public function getAssignedCountAttribute(): int {
+    public function getAssignedCountAttribute(): int
+    {
         return $this->users()->count();
     }
 
-    public function getIsFullAttribute(): bool {
+    public function getIsFullAttribute(): bool
+    {
         return $this->lifecycle_status === self::STATUS_FULL;
     }
 
-    public function getIsOpenAttribute(): bool {
+    public function getIsOpenAttribute(): bool
+    {
         return $this->lifecycle_status === self::STATUS_OPEN;
     }
 
@@ -178,7 +190,8 @@ class Schedule extends Model {
         return self::STATUS_OPEN;
     }
 
-    public function canAssign(bool $asAdmin = false): bool {
+    public function canAssign(bool $asAdmin = false): bool
+    {
         if (in_array($this->status, [self::STATUS_COMPLETED, self::STATUS_CANCELLED], true)) {
             return false;
         }
@@ -187,11 +200,11 @@ class Schedule extends Model {
             return false;
         }
 
-        // return $this->assigned_count < $this->required_personnel;
-        return true;
+        return $this->assigned_count < $this->required_personnel;
     }
 
-    public function assertCanAssign(bool $asAdmin = false): void {
+    public function assertCanAssign(bool $asAdmin = false): void
+    {
         if (! $this->canAssign($asAdmin)) {
             $reason = $this->is_locked
                 ? 'Schedule is locked before start.'
@@ -286,5 +299,4 @@ class Schedule extends Model {
     {
         return app(ScheduleConflictDetector::class)->summary($this);
     }
-
 }
