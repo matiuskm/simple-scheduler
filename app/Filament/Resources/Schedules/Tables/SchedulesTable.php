@@ -68,7 +68,11 @@ class SchedulesTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->disabled(fn(Schedule $record) => ! $record->canAssign(auth()->user()?->isAdmin())),
+                    ->disabled(function (Schedule $record) {
+                        /** @var \App\Models\User|null $user */
+                        $user = \Illuminate\Support\Facades\Auth::user();
+                        return ! $user?->isAdmin() && ! $record->canAssign();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
