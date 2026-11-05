@@ -20,6 +20,7 @@ class WelcomeHero extends Widget
         $user = auth()->user();
 
         return [
+            'isAdmin' => $user?->isAdmin() ?? false,
             'firstName' => explode(' ', trim($user?->name ?? ''))[0],
             'today' => now('Asia/Jakarta')->locale('id')->translatedFormat('l, j F Y'),
             'upcoming' => Schedule::upcomingVisible()->count(),
