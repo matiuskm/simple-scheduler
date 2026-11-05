@@ -16,7 +16,7 @@ class AdminUpcomingSchedules extends BaseWidget
 {
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Jadwal Mendatang (Admin)';
+    protected static ?string $heading = 'Jadwal Mendatang';
 
     public static function canView(): bool
     {

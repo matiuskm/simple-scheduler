@@ -202,3 +202,77 @@ button.fi-ta-record-collapse-btn svg *{
   stroke: none !important;
 }
 
+
+/* ======================================================
+   REDESIGN: green editorial (issue #13)
+====================================================== */
+:root {
+    --pk-green: #1f4a3d;
+    --pk-green-soft: #e3efe9;
+    --pk-cream: #f7f6f2;
+    --pk-line: #e6e3da;
+    --pk-serif: 'Newsreader', Georgia, serif;
+}
+
+body.fi-body, .fi-body, .fi-layout { background: var(--pk-cream); }
+.fi-main-ctn { background: var(--pk-cream); }
+.fi-main { padding-block: 1rem; }
+
+/* sidebar */
+.fi-sidebar { background: #fff; border-right: 1px solid var(--pk-line); }
+.fi-sidebar-header { background: #fff; box-shadow: none; }
+.fi-logo { font-family: var(--pk-serif); font-weight: 500; color: var(--pk-green); }
+.fi-sidebar-group-label { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: #8a8a82; }
+.fi-sidebar-item-btn { border-radius: .75rem; }
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn { background: var(--pk-green-soft); }
+.fi-sidebar-item.fi-active .fi-sidebar-item-label,
+.fi-sidebar-item.fi-active .fi-icon { color: var(--pk-green); font-weight: 600; }
+.fi-topbar { background: transparent; box-shadow: none; }
+.fi-topbar nav { background: var(--pk-cream); box-shadow: none; }
+.fi-topbar .fi-user-menu { display: none; } /* user card pindah ke sidebar */
+
+.pk-user { margin: .75rem; padding: .75rem; background: var(--pk-cream); border-radius: 1rem; }
+.pk-user-row { display: flex; gap: .6rem; align-items: center; margin-bottom: .6rem; min-width: 0; }
+.pk-avatar { flex: none; width: 2rem; height: 2rem; border-radius: 999px; background: var(--pk-green-soft); color: var(--pk-green); display: grid; place-items: center; font-size: .7rem; font-weight: 600; }
+.pk-user-meta { min-width: 0; line-height: 1.2; }
+.pk-user-meta strong { display: block; font-size: .8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pk-user-meta small { color: #8a8a82; font-size: .7rem; }
+.pk-user button { width: 100%; padding: .45rem; border: 1px solid var(--pk-line); border-radius: .6rem; background: #fff; font-size: .8rem; font-weight: 500; }
+.pk-user button:hover { background: var(--pk-green-soft); }
+
+/* hero */
+.pk-hero { position: relative; overflow: hidden; background: var(--pk-green); color: #fff; border-radius: 1.75rem; padding: 1.5rem; }
+.pk-hero::after { content: ''; position: absolute; top: -3rem; right: -3rem; width: 14rem; height: 14rem; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%); pointer-events: none; }
+.pk-eyebrow { font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.pk-hero h1 { font-family: var(--pk-serif); font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 500; line-height: 1.15; margin: .25rem 0 .5rem; }
+.pk-hero h1 em { font-style: italic; }
+.pk-lead { max-width: 28rem; font-size: .9rem; color: rgba(255,255,255,.8); }
+.pk-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 9rem)); gap: .6rem; margin-top: 1.25rem; }
+.pk-stats div { padding: .7rem .8rem; border: 1px solid rgba(255,255,255,.18); border-radius: .9rem; background: rgba(255,255,255,.07); }
+.pk-stats b { display: block; font-family: var(--pk-serif); font-size: 1.5rem; font-weight: 400; }
+.pk-stats span { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.75); }
+@media (min-width: 768px) { .pk-hero { padding: 2rem 2.25rem; } }
+@media (max-width: 420px) { .pk-stats { gap: .4rem; } .pk-stats div { padding: .55rem; } .pk-stats span { font-size: .55rem; letter-spacing: .06em; } }
+
+/* kartu & judul section */
+.fi-section, .fi-ta-ctn, .fi-wi-table { border-radius: 1.25rem; }
+.fi-ta-ctn { border: 1px dashed var(--pk-line); box-shadow: none; background: #fffefc; }
+.fi-ta-header-heading, .fi-header-heading, .fi-simple-header-heading { font-family: var(--pk-serif); font-weight: 500; color: #1d2b25; }
+.fi-ta-empty-state-heading { font-family: var(--pk-serif); font-weight: 500; }
+.fi-ta-empty-state-icon-bg { background: var(--pk-green-soft); }
+
+/* kartu jadwal: warna liturgi tetap jelas, bentuk mengikuti tema */
+.fi-ta-record.bg-hijau, .fi-ta-record.bg-merah, .fi-ta-record.bg-putih,
+.fi-ta-record.bg-ungu, .fi-ta-record.bg-pink { border-radius: 1rem; }
+.bg-putih { border: 1px solid var(--pk-line); }
+
+/* mobile: cegah overflow horizontal */
+@media (max-width: 767px) {
+    .fi-main { padding-inline: .75rem; }
+    .fi-ta-content { overflow-x: auto; }
+}
+
+/* login */
+.fi-simple-layout { background: var(--pk-cream); }
+.fi-simple-main { border-radius: 1.5rem; box-shadow: 0 10px 40px rgba(31,74,61,.08); border: 1px solid var(--pk-line); }
+.fi-simple-page .fi-logo { font-size: 1.6rem; }
