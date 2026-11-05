@@ -22,9 +22,11 @@ class ScheduleResource extends Resource
 {
     protected static ?string $model = Schedule::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Management';
+    protected static string|UnitEnum|null $navigationGroup = null;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CalendarDays;
+
+    protected static ?string $navigationLabel = 'Jadwal';
 
     protected static ?int $navigationSort = 3;
 

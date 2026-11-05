@@ -15,13 +15,13 @@ class ActivityLogResource extends Resource
 {
     protected static ?string $model = ActivityLog::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Management';
+    protected static string|UnitEnum|null $navigationGroup = 'Manajemen';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::ClipboardDocumentList;
 
     protected static ?int $navigationSort = 4;
 
-    protected static ?string $navigationLabel = 'Activity Log';
+    protected static ?string $navigationLabel = 'Log Aktivitas';
 
     public static function table(Table $table): Table
     {
