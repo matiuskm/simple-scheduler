@@ -248,6 +248,7 @@ body.fi-body, .fi-body, .fi-layout { background: var(--pk-cream); }
 .pk-hero h1 em { font-style: italic; }
 .pk-lead { max-width: 28rem; font-size: .9rem; color: rgba(255,255,255,.8); }
 .pk-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 9rem)); gap: .6rem; margin-top: 1.25rem; }
+.pk-stats-2 { grid-template-columns: repeat(2, minmax(0, 9rem)); }
 .pk-stats div { padding: .7rem .8rem; border: 1px solid rgba(255,255,255,.18); border-radius: .9rem; background: rgba(255,255,255,.07); }
 .pk-stats b { display: block; font-family: var(--pk-serif); font-size: 1.5rem; font-weight: 400; }
 .pk-stats span { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.75); }

@@ -16,3 +16,7 @@ test('dashboard shows hero, indonesian menu and sidebar user card', function () 
         ->assertSee('Dasbor')
         ->assertSee('Keluar');
 });
+
+test('upcoming stat is only shown to admins', function () {
+    $this->actingAs(User::factory()->create())->get('/admin')->assertDontSee('Jadwal mendatang', false);
+});
