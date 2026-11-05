@@ -227,8 +227,7 @@ body.fi-body, .fi-body, .fi-layout { background: var(--pk-cream); }
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn { background: var(--pk-green-soft); }
 .fi-sidebar-item.fi-active .fi-sidebar-item-label,
 .fi-sidebar-item.fi-active .fi-icon { color: var(--pk-green); font-weight: 600; }
-.fi-topbar { background: transparent; box-shadow: none; }
-.fi-topbar nav { background: var(--pk-cream); box-shadow: none; }
+.fi-topbar, .fi-topbar-ctn { background: var(--pk-cream); box-shadow: 0 1px 0 var(--pk-line); }
 .fi-topbar .fi-user-menu { display: none; } /* user card pindah ke sidebar */
 
 .pk-user { margin: .75rem; padding: .75rem; background: var(--pk-cream); border-radius: 1rem; }
