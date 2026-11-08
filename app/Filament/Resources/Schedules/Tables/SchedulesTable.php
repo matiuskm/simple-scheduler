@@ -72,7 +72,7 @@ class SchedulesTable
                     ->label('Salin link')
                     ->icon('heroicon-o-link')
                     ->color('gray')
-                    ->alpineClickHandler(fn (Schedule $record) => 'window.navigator.clipboard.writeText('.json_encode(route('schedules.public', $record)).'); $tooltip("Link disalin", { timeout: 1500 })'),
+                    ->alpineClickHandler(fn (Schedule $record) => "window.navigator.clipboard.writeText('".route('schedules.public', $record)."'); \$tooltip('Link disalin', { timeout: 1500 })"),
                 EditAction::make()
                     ->disabled(function (Schedule $record) {
                         /** @var \App\Models\User|null $user */
