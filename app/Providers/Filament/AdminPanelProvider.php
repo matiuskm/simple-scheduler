@@ -81,7 +81,6 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.partials.fonts'))
             ->renderHook(PanelsRenderHook::SIDEBAR_FOOTER, fn () => view('filament.partials.sidebar-footer'))
             ->renderHook(PanelsRenderHook::FOOTER, fn () => view('filament.partials.footer'))
-            ->renderHook(PanelsRenderHook::SIMPLE_LAYOUT_END, fn () => view('filament.partials.footer'))
             ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }
