@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Schedule extends Model
 {
@@ -51,6 +52,10 @@ class Schedule extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (Schedule $schedule): void {
+            $schedule->uuid ??= (string) Str::uuid();
+        });
+
         static::updated(function (Schedule $schedule): void {
             if ($schedule->wasChanged('status')) {
                 if ($schedule->status === self::STATUS_CANCELLED) {

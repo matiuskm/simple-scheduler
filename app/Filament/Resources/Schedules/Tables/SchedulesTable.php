@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Schedules\Tables;
 
 use App\Models\Schedule;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -67,6 +68,11 @@ class SchedulesTable
                     ->query(fn(Builder $query): Builder => $query->hasConflicts()),
             ])
             ->recordActions([
+                Action::make('copyLink')
+                    ->label('Salin link')
+                    ->icon('heroicon-o-link')
+                    ->color('gray')
+                    ->alpineClickHandler(fn (Schedule $record) => 'window.navigator.clipboard.writeText('.json_encode(route('schedules.public', $record)).'); $tooltip("Link disalin", { timeout: 1500 })'),
                 EditAction::make()
                     ->disabled(function (Schedule $record) {
                         /** @var \App\Models\User|null $user */

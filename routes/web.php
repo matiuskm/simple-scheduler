@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PublicScheduleController;
 use App\Http\Controllers\ScheduleCalendarController;
 
 Route::get('/', function () {
@@ -10,3 +11,6 @@ Route::get('/', function () {
 Route::get('/schedules/{schedule}/calendar.ics', [ScheduleCalendarController::class, 'download'])
     ->middleware('auth')
     ->name('schedules.calendar.ics');
+
+Route::get('/jadwal/{schedule:uuid}', [PublicScheduleController::class, 'show'])
+    ->name('schedules.public');
